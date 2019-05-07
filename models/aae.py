@@ -9,25 +9,23 @@ class Generator(nn.Module):
         super().__init__()
 
         self.z_size = config['z_size']
-        use_bias = config['model']['G']['use_bias']
-        self.sigmoid = nn.Sigmoid()
+        self.use_bias = config['model']['G']['use_bias']
+        self.relu_slope = config['model']['G']['relu_slope']
         self.model = nn.Sequential(
-            nn.Linear(in_features=self.z_size, out_features=64, bias=use_bias),
+            nn.Linear(in_features=self.z_size, out_features=64, bias=self.use_bias),
             nn.ReLU(inplace=True),
 
-            nn.Linear(in_features=64, out_features=128, bias=use_bias),
+            nn.Linear(in_features=64, out_features=128, bias=self.use_bias),
             nn.ReLU(inplace=True),
 
-            nn.Linear(in_features=128, out_features=512, bias=use_bias),
+            nn.Linear(in_features=128, out_features=512, bias=self.use_bias),
             nn.ReLU(inplace=True),
 
-            nn.Linear(in_features=512, out_features=1024, bias=use_bias),
+            nn.Linear(in_features=512, out_features=1024, bias=self.use_bias),
             nn.ReLU(inplace=True),
 
-            nn.Linear(in_features=1024, out_features=2048 * 3, bias=use_bias),
+            nn.Linear(in_features=1024, out_features=2048 * 3, bias=self.use_bias),
         )
-
-        # self.model = nn.DataParallel(self.model)
 
     def forward(self, input):
         output = self.model(input.squeeze())
@@ -61,8 +59,6 @@ class Discriminator(nn.Module):
             nn.Linear(64, 1, bias=True)
         )
 
-        # self.model = nn.DataParallel(self.model)
-
     def forward(self, x):
         logit = self.model(x)
         return logit
@@ -76,7 +72,7 @@ class Encoder(nn.Module):
         self.use_bias = config['model']['E']['use_bias']
         self.relu_slope = config['model']['E']['relu_slope']
 
-        self.pc_encoder_conv = nn.Sequential(
+        self.conv = nn.Sequential(
             nn.Conv1d(in_channels=3, out_channels=64, kernel_size=1,
                       bias=self.use_bias),
             nn.ReLU(inplace=True),
@@ -97,17 +93,25 @@ class Encoder(nn.Module):
                       bias=self.use_bias),
         )
 
-        self.pc_encoder_fc = nn.Sequential(
+        self.fc = nn.Sequential(
             nn.Linear(512, 256, bias=True),
-            nn.ReLU(inplace=True),
-            nn.Linear(256, self.z_size, bias=True)
+            nn.ReLU(inplace=True)
         )
 
-        self.sigmoid = nn.Sigmoid()
+        self.mu_layer = nn.Linear(256, self.z_size, bias=True)
+        self.std_layer = nn.Linear(256, self.z_size, bias=True)
+
+    def reparameterize(self, mu, logvar):
+        std = torch.exp(0.5*logvar)
+        eps = torch.randn_like(std)
+        return eps.mul(std).add_(mu)
 
     def forward(self, x):
-        output = self.pc_encoder_conv(x)
+        output = self.conv(x)
         output2 = output.max(dim=2)[0]
-        logit = self.pc_encoder_fc(output2)
-        z = self.sigmoid(logit)
-        return z
+        logit = self.fc(output2)
+        mu = self.mu_layer(logit)
+        logvar = self.std_layer(logit)
+        z = self.reparameterize(mu, logvar)
+        return z, mu, logvar
+
