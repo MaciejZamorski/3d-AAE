@@ -2,7 +2,7 @@
 
 Authors: Maciej Zamorski, Maciej Zięba, Piotr Klukowski, Rafał Nowak, Karol Kurach, Wojciech Stokowiec, and Tomasz Trzciński
 
-![mainimg](https://github.com/MaciejZamorski/3d-AAE/blob/master/BinaryRepresentations.jpg)
+![mainimg](https://github.com/MaciejZamorski/3d-AAE/blob/master/BinaryRepresentations.png)
 
 ## Introduction
 This is a PyTorch implementation for a family of 3dAAE models, a novel framework for learning continuous and binary representations of 3d point clouds based on Adversarial Autoencoder model, as presented in:
