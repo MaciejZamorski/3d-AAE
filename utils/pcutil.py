@@ -5,7 +5,7 @@ from numpy.linalg import norm
 # Don't delete this line, even if PyCharm says it's an unused import.
 # It is required for projection='3d' in add_subplot()
 from mpl_toolkits.mplot3d import Axes3D
-
+import torch
 
 def rand_rotation_matrix(deflection=1.0, seed=None):
     """Creates a random rotation matrix.
@@ -119,6 +119,19 @@ def plot_3d_point_cloud(x, y, z, show=True, show_axis=True, in_u_sphere=False,
 
     if title is not None:
         plt.title(title)
+
+    if type(x). __module__ != np. __name__:
+        x = x.to('cpu')
+    else:
+        x = torch.from_numpy(x.astype(np.float32)).clone().to('cpu').detach().numpy().copy()
+    if type(y). __module__ != np. __name__:
+        y = y.to('cpu')
+    else:
+        y = torch.from_numpy(y.astype(np.float32)).clone().to('cpu').detach().numpy().copy()
+    if type(z). __module__ != np. __name__:
+        z = z.to('cpu')
+    else:
+        z = torch.from_numpy(z.astype(np.float32)).clone().to('cpu').detach().numpy().copy()
 
     sc = ax.scatter(x, y, z, marker=marker, s=s, alpha=alpha, *args, **kwargs)
     ax.view_init(elev=elev, azim=azim)

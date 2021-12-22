@@ -16,6 +16,10 @@ import torch.optim as optim
 import torch.utils.data
 from torch.utils.data import DataLoader
 
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
 from utils.pcutil import plot_3d_point_cloud
 from utils.util import find_latest_epoch, prepare_results_dir, cuda_setup, setup_logging
 

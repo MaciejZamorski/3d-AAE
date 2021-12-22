@@ -1,10 +1,10 @@
 {
     "experiment_name": "experiment",
-    "results_root": "/Users/maciek/test-results",
+    "results_root": "/Users/kazuto.hori/Ghelia/Prj/3d-AAE/results",
     "clean_results_dir": false,
 
     "cuda": true,
-    "gpu": 3,
+    "gpu": 0,
 
     "reconstruction_loss": "chamfer",
 
@@ -12,7 +12,7 @@
     ],
 
     "dataset": "shapenet",
-    "data_dir": "/Users/maciek/shapenet",
+    "data_dir": "/Users/kazuto.hori/Ghelia/Prj/3d-AAE/shapenet",
     "classes": [],
     "shuffle": true,
     "transforms": ["rotate"],
